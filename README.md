@@ -1,1 +1,1 @@
-# PrivilegeLearningImprove
+# Bayesian Distilation
