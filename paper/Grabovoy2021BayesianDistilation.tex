@@ -1,0 +1,285 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Sample document for preparing papers to  "Avtomatika i Telemekhanika"
+%%  charset=utf-8
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[12pt]{a&t}
+\usepackage{graphicx}
+\usepackage{bm}
+\usepackage{url}
+\usepackage{multirow}
+
+\usepackage{autonum}
+
+\begin{document}  %%%!!!
+
+\year{2021}
+
+\title{Байесовская дистилляция моделей глубокого обучения}%
+\thanks{Работа выполнена при поддержке \dots
+(грант \mbox{№\,\dots}).}
+
+\authors{А.В.~ГРАБОВОЙ\\
+(Московский физико-технический институт, Москва)\\
+В.В.~СТРИЖОВ, д-р~физ-мат.~наук\\
+(Вычислительный центр имени А.\,А. Дородницына ФИЦ ИУ РАН)}
+
+\maketitle
+
+\begin{abstract}
+В данной работе исследуется проблема понижения сложности аппроксимирующих моделей. Рассматриваются методы основаны на дистилляции моделей глубокого обучения. Данные методы основаны на понятии учителя и ученика, где вводится предположение, что модель ученика имеет меньше параметров, чем модель учителя. Предлагается байесовский подход к построению модели ученика, где априорное распределения параметров ученика зависит от апостериорного распределения параметров модели учителя. Авторами предложен метод построение априорного распределения в пространстве параметров модели ученика при помощи суперпозиции локальных преобразований пространства параметров модели учителя. Теоретические результаты об предложенном методе построения априорного распределения параметров ученика анализируются в вычислительном эксперименте на синтетических и реальных данных. В качестве реальных данных рассматривается выборка FashionMNIST.
+
+\smallskip\\
+\textit{Ключевые слова}: выбор модели; байесовский вывод; дистилляция модели; локальные преобразования; преобразования вероятностных пространств.
+\end{abstract}
+
+\section{Введение}
+В последние несколько лет мощности вычислительных систем выросли (ссылка на статью по выч. тех.). Данный рост мощности вычислительных систем привел к повышению сложности моделей машинного обучения, путем увеличения обучаемых параметров. Примерами таких моделей являются модели: AlexNet~\cite{Krizhevsky2012}, VGGNet~\cite{Simonyan2014}, ResNet~\cite{Kaiming2015}, BERT~\cite{Devlin2018, Vaswani2017}, mT5~\cite{Linting2021}, GPT3\cite{Brown2020} и другие.
+\begin{table}[h!]
+\caption{Число параметров в моделях машинного обучения.}
+\label{tb:intro:1}
+\begin{center}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{|l|l|l|l|l|l|l|}
+\hline
+Название               & AlexNet     & VGGNet      & ResNet      & BERT     & mT5   & GPT3  \\ \hline
+Год                          & 2012        & 2014        & 2015        & 2018     & 2020  & 2020  \\ \hline
+Тип данных             & изображение & изображение & изображение & текст    & текст & текст \\ \hline
+Число параметров, млрд & $0{,}06$    & $0{,}13$    & $0{,}06$    & $0{,}34$ & $13$  & $175$ \\ \hline
+\end{tabular}
+}
+\end{center}
+\end{table}
+В табл.~\ref{tb:intro:1} представлено описание популярных глубоких моделей машинного обучения. Видно, что число параметров моделей машинного обучения постоянно растет, что влечет снижение интерпретируемости моделей. Данная проблема широко рассматривается в специальном классе задач по Adversarial Attack~\cite{Zheng2020}. Большое число параметров влечет большие требования к вычислительным ресурсам, из-за чего данные модели не могут быть использованы в мобильных устройствах. Для решения данной проблемы распространены методы дистилляции модели~\cite{Hinton2015} с большим числом параметров в модель с малым числом параметров. Дистиллируемая модель с большим числом параметров называется~\textit{учитель}, а модель получаемая путем дистилляции называется~\textit{ученик}.
+\begin{definition}
+Дистилляция модели~--- уменьшение сложности модели путем выбора модели в множестве более простых моделей на основе параметров и ответов более сложной фиксируемой модели.
+\end{definition}
+
+Главные идеи дистилляции предложены в работе Дж.\,Е. Хинтона~\cite{Hinton2015}. В работе предлагается использовать ответы учителя в качестве целевой переменной для обучения модели ученика. Проведено ряд экспериментов, в которых проводилась дистилляции моделей для задачи классификации машинного обучения. Базовый эксперимент на выборке MNIST~\cite{mnist} показал применимость метода для дистилляции избыточно сложной нейросетевой модели в нейросетевую модель меньшей сложности. Эксперимент по распознаванию речи, в котором ансамбль моделей был дистиллирован в одну модель. Также в работе~\cite{Hinton2015} был проведен эксперимент по обучению экспертных моделей на основе одной большой модели при помощи предложенного метода дистилляции.
+
+В работе~\cite{Zehao2017} предложен метод Neuron Selectivity Transfer основаный на минимизации специальной функции потерь основаной на Maximum Mean Discrepancy между выходами всех слоев модели учителя и ученика. В рамках вычислительного эксперимента была показана эффективность данного метода для задачи классификации изображений на примере выборок CIFAR~\cite{cifar10} и ImageNet~\cite{imagenet}.
+
+В данной работе предлагается метод на основе байесовского вывода. В качестве априорного распределения параметров модели ученика предлагается использовать апостериорное распределение параметров модели учителя. Основной проблемой данного подхода является различие в пространствах параметров модели учителя и модели ученика. Авторы предлагают подход основаный на локальных преобразованиях пространств для сопоставления пространств параметров модели ученика и учителя. В результате данного выравнивания параметры модели учителя и модели ученика принадлежат одному пространству и как следствие в качестве априорного распределения параметров модели ученика выбирается апостериорное распределение параметров модели учителя.
+
+В рамках вычислительного эксперимента анализируются методы ...
+
+\section{Постановка задачи дистилляции}
+Задана выборка:
+\begin{gather}
+\label{eq:st:1}
+\begin{aligned}
+\mathbf{D} = \left\{\left(\mathbf{x}_i, y_i\right)\right\}_{i=1}^{m}, \qquad \mathbf{x}_i \in \mathbb{R}^{n}, \quad y_i \mathbb{Y},
+\end{aligned}
+\end{gather}
+где~$\mathbf{x}_i, y_i$~--- признаковое описание и целевая переменная~$i$-го объекта, число объектов вв обучающей выборке обозначается~$m$. Размер признакового описания объектов обозначим~$n$. Множество~$\mathbb{Y}=\{1,\cdots,K\}$ для задачи классификации, где~$K$ число классов, множество $\mathbb{Y}=\mathbb{R}$ для задачи регрессии.
+
+Задана модель учителя в виде суперпозиций линейный преобразований и нелинейных преобразований:
+\begin{gather}
+\label{eq:st:2}
+\begin{aligned}
+f = \sigma \circ l\bigr(\mathbf{U}_T\bigr) \circ \sigma \circ l\bigr(\mathbf{U}_{T-1}\bigr) \circ \cdots \circ \sigma \circ l\bigr(\mathbf{U}_1\bigr),
+\end{aligned}
+\end{gather}
+где~$T$~--- число слоев модели учителя, $\sigma$~--- функция активации, а $l\bigr(\mathbf{U}_t, \mathbf{x}\bigr) = \mathbf{U}_{y}\mathbf{x}$ обозначает линейное преобразование. Матрицы~$\mathbf{U}_t$ описывают параметры модели учителя~$f$. Каждая матрица~$\mathbf{U}_t$ имеет размер~$n_t\times n_{t-1},$ где $n_0=n,$ а  $n_T={1}$ для задачи регрессии и $n_T=K$ для задачи классификации на $K$ классов. Число параметров $p_f$ нейросетевой модели~$f$ вычисляется следующим образом:
+\begin{gather}
+\label{eq:st:2}
+\begin{aligned}
+p_f = \sum_{t=1}^{T}n_tn_{t-1}.
+\end{aligned}
+\end{gather}
+Зададим некоторый порядок на множестве параметров модели учителя~$f$. Вектор параметров модели учителя~$f$ обозначим~$\mathbf{u}$. В данной работе для полносвязнной нейронной сети рассматривается естественный порядок индуцированный номером слоя и номером нейрона и номером элемента вектора параметра нейрона.
+
+Например рассмотрим следующую модель учителя для решения задачи регрессии:
+\begin{gather}
+\label{eq:st:3}
+\begin{aligned}
+f_{3} = \sigma\bigr(\mathbf{U}_3\bigr(\sigma\bigr(\mathbf{U}_2\sigma\bigr(\mathbf{U}_1\mathbf{x}\bigr)\bigr)\bigr)\bigr),
+\end{aligned}
+\end{gather}
+где для рассмотренной модели вектор параметров~$\mathbf{u}$ имеет следующий вид:
+\begin{gather}
+\label{eq:st:4}
+\begin{aligned}
+\mathbf{u}_{f_3} = \bigr[u_1^{1,1}, \cdots, u_1^{1,n},
+                                               \cdots, 
+                             u_1^{n_1,1}, \cdots, u_1^{n_1,n},  
+                             u_2^{1, 1}, \cdots, u_2^{1, n_1}, 
+                                                \cdots, 
+                            u_2^{n_2, 1}, \cdots, u_2^{n_2, n_1},
+                            u_3^{1, 1}, \cdots, u_3^{1, n_2}\bigr].
+\end{aligned}
+\end{gather}
+%Пусть для вектора модели учителя~$f$ задано апостериорное распределение параметров~$\mathbf{u}$:
+%\begin{gather}
+%\label{eq:st:5}
+%\begin{aligned}
+%q\bigr(\mathbf{u}\bigr) = \mathcal{N}\bigr(\mathbf{u}| \mathbf{u}_{0}, \Sigma_{u_0}\bigr),
+%\end{aligned}
+%\end{gather}
+%в рамках данной работы введено ограничение на вид функции апостериорного распределения параметров %модели учителя в виде нормального распределение.
+Пусть для вектора модели учителя~$f$ задано апостериорное распределение параметров~$p_f\bigr(\mathbf{u}|\mathbf{D}\bigr).$
+
+На основе выборки~$\mathbf{D}$ и модели учителя~$f$ требуется выбрать модель ученика из параметрического семейства функций:
+\begin{gather}
+\label{eq:st:5}
+\begin{aligned}
+\mathcal{G} = \left\{g| g = \sigma \circ l\bigr(\mathbf{W}_S\bigr) \circ \cdots \circ \sigma \circ l\bigr(\mathbf{W}_1\bigr), \mathbf{W}_s \in \mathbb{R}^{n_s \times n_{s-1}} \right\},
+\end{aligned}
+\end{gather}
+где~$S$ число слоев модели ученика, аналогичным образом определяются~$n_0, n_S$ и~$p_g$. Аналогичным образом введем вектор параметров модели ученика~$\mathbf{w}.$ Заметим, что каждая модель~$g$ из семейства~$\mathcal{G}$ задается своим вектором параметров~$\mathbf{w}_g,$ а следовательно задача выборка модели~$g\in\mathcal{G}$ эквивалента задаче выбора вектора параметров~$\mathbf{w}\in\mathbb{R}^{p_g}$.
+
+Выбор оптимальных параметров~$\hat{\mathbf{w}} \in \mathbb{R}^{p_g}$ проводится при помощи вариационного вывода на основе совместного правдоподобия модели и данных:
+\begin{gather}
+\label{eq:st:6}
+\begin{aligned}
+\mathcal{L}_{\mathcal{A}}\bigr(\mathbf{D}, \mathcal{A}\bigr) = \log p\bigr(\mathbf{D}|\mathcal{A}\bigr) = \log \int_{\mathbf{w} \in \mathbb{R}^{p_g}}p\bigr(\mathbf{D}|\mathbf{w}\bigr)p\bigr(\mathbf{w}|\mathcal{A}\bigr)d\mathbf{w},
+\end{aligned}
+\end{gather}
+где~$p_g\bigr(\mathbf{w}| \mathcal{A}\bigr)$~--- априорное распределение вектора параметров модели ученика.
+Так как вычисление интеграла~\eqref{eq:st:6} является вычислительно сложной задачей, рассмотрим вариационных подход~\cite{graves2011, grabovoy2019} для решения данной задачи. Пусть задано распределение вариационное распределение параметров модели ученика~$q_g\bigr(\mathbf{w}\bigr),$ которое аппроксимирует неизвестное апостериорное распределение~$p_g\bigr(\mathbf{w}|\mathbf{D}\bigr)$. Выбор параметров~$\mathbf{w}$ сводится к решению оптимизационной задачи:
+\begin{gather}
+\label{eq:st:7}
+\begin{aligned}
+\hat{\mathbf{w}} = \arg \min_{q_g, \mathbf{w}} \text{D}_{KL}\bigr(q_g\bigr(\mathbf{w}\bigr)||p_g\bigr(\mathbf{w}|\mathcal{A}\bigr)\bigr) - \log p\bigr(\mathbf{y}|\mathbf{X}, \mathbf{w}\bigr),
+\end{aligned}
+\end{gather}
+заметим, что выражение~\eqref{eq:st:7} не учитывает модель учителя~$f$ при обучении. Для использовании информации об учители предлагается рассмотреть гиперпараметры~$\mathcal{A}$ как функцию от апостериорного распределения~$p_g\bigr(\mathbf{u}|\mathbf{D}\bigr)$.
+
+\section{Построение априорного распределения ученика}
+Пусть апостериорное распределение параметров модели учителя является нормальным распределением:
+\begin{gather}
+\label{eq:ap:1}
+\begin{aligned}
+p\bigr(\mathbf{u}|\mathbf{D}\bigr) = \mathcal{N}\bigr(\mathbf{u}_0, \bm{\Sigma}_{u_0}\bigr),
+\end{aligned}
+\end{gather}
+где~$\mathbf{u}_0$ и~$\bm{\Sigma}_{u_0}$ параметры апостериорного распределения.
+
+\subsection{Учитель и ученик принадлежат одному семейству}
+Рассмотрим следующие условия:
+\begin{enumlist}
+    \item число слоев модели учителя равняется числу слоев модели ученика $S=T$;
+    \item размеры соответствующих слоев совпадают, другими словами, для всех $t, s$ таких, что $t=s$ выполняется $n_s = n_t,$ где $n_t$ обозначает размер $t$-го слоя учителя, а $n_s$ размер $s$-го слоя ученика.
+\end{enumlist}
+В случае выполнения условий 1)--2) априорное распределение модели ученика равняется апостериорному распределения параметров учителя, то есть $p_g\bigr(\mathbf{u}|\mathbf{D}\bigr) = p_f\bigr(\mathbf{u}|\mathbf{D}\bigr)$.
+
+\subsection{Удаление нейрона в слое учителя}
+Рассмотрим следующие условия:
+\begin{enumlist}
+    \item число слоев модели учителя равняется числу слоев модели ученика $S=T$;
+    \item размеры соответствующих слоев не совпадают, другими словами, для всех $t, s$ таких, что $t=s$ выполняется $n_s \leq n_t,$ где $n_t$ обозначает размер $t$-го слоя учителя, а $n_s$ размер $s$-го слоя ученика.
+\end{enumlist}
+
+Проведем адаптацию модели учителя в модель ученика при помощи последовательных преобразований пространства параметров~$\mathbf{u}$. Рассмотрим элементарное преобразования:
+\begin{gather}
+\label{eq:ap:2}
+\begin{aligned}
+\phi\bigr(t\bigr) : \mathbb{R}^{p_f} \to \mathbb{R}^{p_f-2n_t}
+\end{aligned}
+\end{gather}
+вектора~$\mathbf{u}$ которое описывает удаление одного нейрона из~$t$-го слоя. Другими словами преобразования~$\phi\bigr(t\bigr)$ зануляет одну из строк матрицы~$\mathbf{U}_t$. Заметим, что данное зануление неизбежно производит зануление соответсвенного столбца матрицы~$\mathbf{U}_{t+1}$.
+
+Обозначим новый вектор параметров~$\mathbf{u}' =  \phi\bigr(t, \mathbf{u}\bigr),$ а подномежство элементов, которые были удалены как~$\mathbf{u}''.$ Аналогичным образом введем обозначения параметров нормального распределения~$p\bigr(\mathbf{u}|\mathbf{D}\bigr),$ а именно $\mathbf{u}_0^{'}, \mathbf{u}_0^{''}, \bm{\Sigma}_{u_0}^{'}, \bm{\Sigma}_{u_0}^{''}, \bm{\Sigma}_{u_0}^{', ''}, \bm{\Sigma}_{u_0}^{'','}.$
+
+Распределение параметров после зануления имеет следующий вид:
+\begin{gather}
+\label{eq:ap:3}
+\begin{aligned}
+p_{f'}\bigr(\mathbf{u}'|\mathbf{D}\bigr) = \mathcal{N}\bigr(\mathbf{u}_{0}'+\bm{\Sigma}_{u_0}^{', ''}{\bm{\Sigma}_{u_0}^{''}}^{-1}\left(\mathbf{0} - \mathbf{u}_0^{''}\right), \bm{\Sigma}_{u_0}^{'}-\bm{\Sigma}_{u_0}^{', ''}{\bm{\Sigma}_{u_0}^{''}}^{-1}\bm{\Sigma}_{u_0}^{', ''}\bigr),
+\end{aligned}
+\end{gather}
+где полученное распределение является оценкой апостериорного распределения модели без одного нейрона. В случае, если отличие в нескольких нейроннах, то выполняется последовательное применение отображения~$\phi\bigr(t, \mathbf{u}\bigr)$. Заметим, что данный подход имеет ряд недостатков, которые связаны с тем, что данная последовательная процедура является жадной.
+
+\subsection{Удаление слоя учителя}
+Пусть в модели учителя требуется убрать $t$-й слой. Рассмотрим следующие условия:
+\begin{enumlist}
+    \item соответсвующие размеры слоев совпадают $n_t=n_{t-1}$;
+    \item функция активации удовлетворяет следующему свойству $\sigma \circ \sigma = \sigma$.
+\end{enumlist}
+
+Проведем адаптацию модели учителя в модель ученика при помощи последовательных преобразований пространства параметров~$\mathbf{u}$. Рассмотрим элементарное преобразования:
+\begin{gather}
+\label{eq:ap:4}
+\begin{aligned}
+\psi\bigr(t\bigr) : \mathbb{R}^{p_f} \to \mathbb{R}^{p_f-n_tn_{t-1}}
+\end{aligned}
+\end{gather}
+вектора~$\mathbf{u}$ которое описывает удаление одного~$t$-го слоя. Другими словами преобразования~$\psi\bigr(t\bigr)$ превращает матрицу~$\mathbf{U}_t$ в удиничную матрицу~$\mathbf{I}$. Введя аналогичные обозначения как для формулы~\eqref{eq:ap:3} получим распределение параметров после удаления слоя:
+\begin{gather}
+\label{eq:ap:5}
+\begin{aligned}
+p_{f'}\bigr(\mathbf{u}'|\mathbf{D}\bigr) = \mathcal{N}\bigr(\mathbf{u}_{0}'+\bm{\Sigma}_{u_0}^{', ''}{\bm{\Sigma}_{u_0}^{''}}^{-1}\left(\mathbf{i} - \mathbf{u}_0^{''}\right), \bm{\Sigma}_{u_0}^{'}-\bm{\Sigma}_{u_0}^{', ''}{\bm{\Sigma}_{u_0}^{''}}^{-1}\bm{\Sigma}_{u_0}^{', ''}\bigr),
+\end{aligned}
+\end{gather}
+где $\mathbf{i}=[\underbrace{1, 0, \cdots, 0}_{n_t}, \underbrace{0, 1, \cdots, 0}_{n_t}, \underbrace{0, 0, 1, \cdots, 0}_{n_t}, \underbrace{0, \cdots, 1}_{n_t}]$ полученное распределение $p\bigr(\mathbf{u}'|\mathbf{D}\bigr)$ является оценкой апостериорного распределения модели без одного слоя. В случае, если отличие в нескольких слоях, то выполняется последовательное применение отображения~$\psi\bigr(t, \mathbf{u}\bigr)$.
+
+\subsection{Выполнение последовательных преобразований}
+Локальные преобразования $\phi, \psi$ позволяют провести выравнивание пространств параметров учителя~$f$ и ученика~$g$. После выравнивания пространств параметров в качестве априорного распределения параметров ученика~$p_g\bigr(\mathbf{w}|\mathbf{D}\bigr)$ рассматривается полученное апостериорное распределение параметров учителя~$p_{f'}\bigr(\mathbf{u}'|\mathbf{D}\bigr)$. Получаем, следующее приближение априорного распределения:
+\begin{gather}
+\label{eq:ap:6}
+\begin{aligned}
+p_g\bigr(\mathbf{w}|\mathbf{D}\bigr) = p_{f'}\bigr(\mathbf{w}|\mathbf{D}\bigr),
+\end{aligned}
+\end{gather}
+где данное априорное распределение использования для поиска оптимальных параметров модели ученика~$\hat{\mathbf{w}}$ используя выражение~\eqref{eq:st:7}.
+
+\section{Вычислительный эксперимент}
+
+
+
+\section{Заключение}
+
+\begin{thebibliography}{10}
+\bibitem{cifar10}
+	\textit{Alex Krizhevsky and Vinod Nair and Geoffrey Hinton} CIFAR-10 (Canadian Institute for Advanced Research) // \url{http://www.cs.toronto.edu/~kriz/cifar.html}
+\bibitem{imagenet}
+	\textit{Deng, J., Dong, W., Socher, R., Li, L.-J., Li, K., Fei-Fei, L. } Imagenet: A large-scale hierarchical image database //  IEEE conference on computer vision and pattern recognition, 2009. P. 248--255. 
+	
+\bibitem{Zehao2017}
+	\textit{{Huang}, Zehao and {Wang}, Naiyan} Like What You Like: Knowledge Distill via Neuron Selectivity Transfer // arXiv e-prints, 2017.
+\bibitem{Zheng2020}
+	\textit{Kui Ren and Tianhang Zheng and Zhan Qin and Xue Liu} Adversarial Attacks and Defenses in Deep Learning // Engineering, 2020. P. 346--360.
+\bibitem{Krizhevsky2012}
+	\textit{Alex Krizhevsky, Ilya Sutskever, Geoffrey Hinton} ImageNet Classification with Depp Convolutional Neural Networks // NIPS, 2012.
+\bibitem{Simonyan2014}
+	\textit{Karen Simonyan and Andrew Zisserman} Very Deep Convolutional Networks for Large-Scale Image Recognition // NIPS, 2014.
+\bibitem{Vaswani2017}
+	\textit{Vaswani A., Shazeer N., Parmar N., Uszkoreit J., Jones L., Gomez A., Kaiser L., Polosukhin I.} Attention Is All You Need // In Advances in Neural Information Processing Systems. 2017. V. 5. P. 6000--6010.
+\bibitem{Devlin2018}
+       \textit{Devlin J., Chang M., Lee K., Toutanova K.} BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding // arXiv preprinted, 2018.
+\bibitem{Brown2020}
+        \textit{Tom B. Brown et al} GPT3: Language Models are Few-Shot Learners // arXiv preprinted, 2020.
+\bibitem{Linting2021}
+        \textit{Linting Xue and Noah Constant and Adam Roberts and Mihir Kale and Rami Al-Rfou and Aditya Siddhant and Aditya Barua and Colin Raffel.} mT5: A massively multilingual pre-trained text-to-text transformer // arXiv preprinted, 2021.
+\bibitem{Ziqing2020}
+        \textit{Yang, Ziqing and Cui, Yiming and Chen, Zhipeng and Che, Wanxiang and Liu, Ting and Wang, Shijin and Hu, Guoping} {T}ext{B}rewer: {A}n {O}pen-{S}ource {K}nowledge {D}istillation {T}oolkit for {N}atural {L}anguage {P}rocessing // Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics: System Demonstrations.  2020. P. 9--16.
+\bibitem{Kaiming2015}
+	\textit{He K., Zhang X., Ren S., Sun J.} Deep Residual Learning for Image Recognition // Proc. of the IEEE Conference on Computer Vision and Pattern Recognition. Las Vegas, 2016. P. 770--778.
+\bibitem{bachteev2018}
+	\textit{Бахтеев О.\,Ю., Стрижов В.\,В.} Выбор моделей глубокого обучения субоптимальной сложности // АиТ. 2018. № 8. С. 129--147.
+\bibitem{Hinton2015}
+        \textit{Hinton G., Vinyals O., Dean J.} Distilling the Knowledge in a Neural Network // NIPS Deep Learning and Representation Learning Workshop. 2015.
+\bibitem{mnist}
+	\textit{LeCun Y.,  Cortes C., Burges C.} The MNIST dataset of handwritten digits, 1998. \text{http://yann.lecun.com/exdb/mnist/index.html}.
+\bibitem{Vapnik2015}
+	\textit{Vapnik V., Izmailov R.} Learning Using Privileged Information: Similarity Control and Knowledge Transfer // Journal of Machine Learning Research. 2015. No 16. P. 2023--2049.
+\bibitem{Lopez2016}
+	\textit{Lopez-Paz D., Bottou L., Scholkopf B., Vapnik V.} Unifying Distillation and Privileged Information // In International Conference on Learning Representations. Puerto Rico, 2016.
+\bibitem{Ivakhnenko1994}
+	\textit{Madala H., Ivakhnenko A.} Inductive Learning Algorithms for Complex Systems Modeling. Boca Raton: CRC Press Inc., 1994.
+\bibitem{fashionmnist}
+	\textit{Xiao H., Rasul K.,Vollgraf R.} Fashion-MNIST: a Novel Image Dataset for Benchmarking Machine Learning Algorithms // arXiv preprint arXiv:1708.07747. 2017.
+\bibitem{twiter2013}
+	\textit{Wilson T., Kozareva Z., Nakov P., Rosenthal S., Stoyanov V., Ritter A.} {S}em{E}val-2013 Task 2: Sentiment Analysis in Twitter // Proceedings of the Seventh International Workshop on Semantic Evaluation ({S}em{E}val 2013). Atlanta, 2013. P. 312--320.
+\bibitem{LeCun1989}
+	\textit{LeCun Y., Boser B., Denker J., Henderson D., Howard R., Hubbard W., Jackel L.} Backpropagation Applied to Handwritten Zip Code Recognition // Neural Computation. 1989. V. 1. No 4. P. 541--551.
+\bibitem{Schmidhuber1997}
+	\textit{Hochreiter S., Schmidhuber J.} Long short-term memory // Neural Computation. 1997. V. 9. No 8.  P. 1735--1780.
+\bibitem{kingma2014}
+	\textit{Kingma D, Ba J.} Adam: A Method for Stochastic Optimization // arXiv preprint arXiv:1412.6980. 2014.
+\bibitem{graves2011}
+	\textit{Graves A.} Practical Variational Inference for Neural Networks // Advances in Neural Information Processing Systems, 2011. Vol. 24. P. 2348--2356.
+\bibitem{grabovoy2019}
+	\textit{Grabovoy A.V., Bakhteev O.Y., Strijov V.V.} Estimation of relevance for neural network parameters // Informatics and Applications, 2019. Vol.13 No 2. P. 62--70.
+ \end{thebibliography}
+\end{document}
