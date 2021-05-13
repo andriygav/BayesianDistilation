@@ -188,10 +188,10 @@ q\bigr(\mathbf{w}|\bm{\mu}, \bm{\Sigma}\bigr) \approx  p\bigr(\mathbf{w}|\mathfr
 \begin{gather}
 \label{eq:ap:1}
 \begin{aligned}
-p\bigr(\mathbf{u}|\mathfrak{D}\bigr) = \mathcal{N}\bigr(\mathbf{u}_0, \bm{\Sigma}_0\bigr),
+p\bigr(\mathbf{u}|\mathfrak{D}\bigr) = \mathcal{N}\bigr(\mathbf{u}_0, \bm{\Sigma}\bigr),
 \end{aligned}
 \end{gather}
-где~$\mathbf{u}_0$ и~$\bm{\Sigma}_0$ параметры этого распределения. На основе параметров~$\mathbf{u}_0$ и~$\bm{\Sigma}_0$ требуется задать параметры~$\mathbf{A}$ априорного распределения~$p\bigr(\mathbf{w}|\mathbf{A}\bigr).$ В случае, когда структура моделей учителя и ученика задаются числом слоев и размером этих слоев, то возможны следующие варианты: число слоев и размер каждого слоя совпадает; число слоев совпадает, а размеры различаются; не совпадает число слоев.
+где~$\mathbf{u}_0$ и~$\bm{\Sigma}$ параметры этого распределения. На основе параметров~$\mathbf{u}_0$ и~$\bm{\Sigma}$ требуется задать параметры~$\mathbf{A}$ априорного распределения~$p\bigr(\mathbf{w}|\mathbf{A}\bigr).$ В случае, когда структура моделей учителя и ученика задаются числом слоев и размером этих слоев, то возможны следующие варианты: число слоев и размер каждого слоя совпадает; число слоев совпадает, а размеры различаются; не совпадает число слоев.
 
 \subsection{Учитель и ученик принадлежат одному семейству}
 \label{section:one:space}
@@ -210,16 +210,16 @@ p\bigr(\mathbf{u}|\mathfrak{D}\bigr) = \mathcal{N}\bigr(\mathbf{u}_0, \bm{\Sigma
 \phi\bigr(t, \mathbf{u}\bigr) : \mathbb{R}^{\nu} \to \mathbb{R}^{\nu-2n_t}
 \end{aligned}
 \end{gather}
-вектора~$\mathbf{u},$ которое описывает удаление одного нейрона из~$t$-го слояучителя. Другими словами, преобразование~$\phi\bigr(t\bigr)$ зануляет одну из строк матрицы~$\mathbf{U}_t$. Заметим, что данное зануление влечет зануление соответствующего столбца матрицы~$\mathbf{U}_{t+1}$.
+вектора~$\mathbf{u},$ которое описывает удаление одного нейрона из~$t$-го слоя учителя. Другими словами, преобразование~$\phi\bigr(t\bigr)$ зануляет одну из строк матрицы~$\mathbf{U}_t$. Заметим, что данное зануление влечет зануление соответствующего столбца матрицы~$\mathbf{U}_{t+1}$.
 
-Обозначим новый вектор параметров~$\mathbf{u}^{\phi} =  \phi\bigr(t, \mathbf{u}\bigr),$ а элементы вектора, которые были удалены как~$\mathbf{u}^{\bar{\phi}}.$ Заметим, что векторы~$\mathbf{u}^{\phi} $ и $\mathbf{u}^{\bar{\phi}}$ являются случайными величинами. Введем следующие обозначения:
+Обозначим новый вектор параметров~$\bm{\upsilon} =  \phi\bigr(t, \mathbf{u}\bigr),$ а элементы вектора, которые были удалены как~$\bar{\bm{\upsilon}}.$ Заметим, что векторы~$\bm{\upsilon}$ и $\bar{\bm{\upsilon}}$ являются случайными величинами. Введем следующие обозначения:
 \begin{gather}
 \label{eq:ap:def:1}
 \begin{aligned}
-\mathbf{u}_{0}^{\phi} = \mathsf{E}\mathbf{u}^{\phi}, \quad \mathbf{u}_{0}^{\bar{\phi}} = \mathsf{E}\mathbf{u}^{\bar{\phi}}, \quad  \bm{\Sigma}_0^{i,j} = \text{cov}\bigr[\mathbf{u}^{i},\mathbf{u}^{j}\bigr],\\
+\bm{\upsilon} _{0} = \mathsf{E}\bm{\upsilon} , \quad \bar{\bm{\upsilon}}_0 = \mathsf{E}\bar{\bm{\upsilon}}, \quad  \bm{\Sigma}_{\bm{\upsilon},\bm{\upsilon}} = \text{cov}\bigr(\bm{\upsilon},\bm{\upsilon}\bigr), \quad  \bm{\Sigma}_{\bm{\upsilon},\bar{\bm{\upsilon}}} = \text{cov}\bigr(\bm{\upsilon},\bar{\bm{\upsilon}}\bigr), \quad  \bm{\Sigma}_{\bar{\bm{\upsilon}},\bar{\bm{\upsilon}}} = \text{cov}\bigr(\bar{\bm{\upsilon}},\bar{\bm{\upsilon}}\bigr),\\
 \end{aligned}
 \end{gather}
-где индексы~$i,j$ принимают значения~$\phi, \bar{\phi}.$
+где~$ \text{cov}\bigr(\bm{\upsilon},\bm{\upsilon}\bigr)$ обозначает ковариационную матрицу.
 \begin{theorem}
 \label{theorem:ap:neural}
 Пусть выполняются следующие условия:
@@ -228,14 +228,13 @@ p\bigr(\mathbf{u}|\mathfrak{D}\bigr) = \mathcal{N}\bigr(\mathbf{u}_0, \bm{\Sigma
 \item число слоев модели учителя равняется числу слоев модели ученика $L=T$;
 \item размеры соответствующих слоев не совпадают, другими словами, для всех $t, l$ таких, что $t=l$ выполняется $n_s \leq n_l,$.
 \end{enumlist}
-Тогда апостериорное распределения параметров модели учителя~$p\bigr(\mathbf{u}^{\phi}|\mathfrak{D}\bigr)$ является нормальным распределением со следующей плотностью распределения:
+Тогда апостериорное распределения параметров модели учителя~$p\bigr(\bm{\upsilon}|\mathfrak{D}\bigr)$ является нормальным распределением со следующей плотностью распределения:
 \begin{gather}
 \label{eq:ap:3}
 \begin{aligned}
-p\bigr(\mathbf{u}^{\phi}|\mathfrak{D}\bigr) = \mathcal{N}\bigr(\mathbf{u}_{0}^{\phi}+\bm{\Sigma}_0^{\phi, \bar{\phi}}\bigr({\bm{\Sigma}_0^{\bar{\phi},\bar{\phi}}}\bigr)^{-1}\left(\mathbf{0} - \mathbf{u}_0^{\bar{\phi}}\right), \bm{\Sigma}_0^{\phi,\phi}-\bm{\Sigma}_0^{\phi, \bar{\phi}}\bigr({\bm{\Sigma}_0^{\bar{\phi}, \bar{\phi}}}\bigr)^{-1}\bm{\Sigma}_0^{\phi, \bar{\phi}}\bigr),
+p\bigr(\bm{\upsilon}|\mathfrak{D}\bigr) = \mathcal{N}\bigr(\bm{\upsilon}_{0}+\bm{\Sigma}_{\bm{\upsilon},\bar{\bm{\upsilon}}}\bm{\Sigma}_{\bar{\bm{\upsilon}},\bar{\bm{\upsilon}}}^{-1}\left(\mathbf{0} - \bar{\bm{\upsilon}}\right), \bm{\Sigma}_{\bm{\upsilon},\bar{\bm{\upsilon}}}\bm{\Sigma}_{\bar{\bm{\upsilon}},\bar{\bm{\upsilon}}}^{-1}\bm{\Sigma}_{\bm{\upsilon},\bar{\bm{\upsilon}}}\bigr).
 \end{aligned}
 \end{gather}
-где~$\mathbf{u}^{\phi}, \mathbf{u}^{\bar{\phi}}, \bm{\Sigma}_0^{\phi, \phi}, \bm{\Sigma}_0^{\bar{\phi}, \bar{\phi}}, \bm{\Sigma}_0^{\phi, \bar{\phi}}$ введены в~\eqref{eq:ap:def:1}.
 \end{theorem}
 \begin{proof}
 TODO
@@ -256,7 +255,7 @@ TODO
 \psi\bigr(t, \mathbf{u}\bigr) : \mathbb{R}^{\nu} \to \mathbb{R}^{\nu-n_tn_{t-1}}
 \end{aligned}
 \end{gather}
-вектора~$\mathbf{u}$ которое описывает удаление одного~$t$-го слоя. Другими словами, преобразования~$\psi\bigr(t\bigr)$ превращает матрицу~$\mathbf{U}_t$ в единичную матрицу~$\mathbf{I}$. 
+вектора~$\mathbf{u}$ которое описывает удаление одного~$t$-го слоя. Другими словами, преобразования~$\psi\bigr(t\bigr)$ превращает матрицу~$\mathbf{U}_t$ в единичную матрицу~$\mathbf{I}$.  Для отображения~$\psi\bigr(t\bigr)$ введем аналогичные~\eqref{eq:ap:def:1} обозначения~$\bm{\upsilon}_{0}, \bar{\bm{\upsilon}}_0, \bm{\Sigma}_{\bm{\upsilon},\bm{\upsilon}}, \bm{\Sigma}_{\bm{\upsilon},\bar{\bm{\upsilon}}}, \bm{\Sigma}_{\bar{\bm{\upsilon}},\bar{\bm{\upsilon}}}.$
 
 \begin{theorem}
 \label{theorem:ap:layer}
@@ -270,10 +269,10 @@ TODO
 \begin{gather}
 \label{eq:ap:5}
 \begin{aligned}
-p\bigr(\mathbf{u}^{\psi}|\mathfrak{D}\bigr) = \mathcal{N}\bigr(\mathbf{u}_{0}^{\psi}+\bm{\Sigma}_0^{\psi, \bar{\psi}}\bigr({\bm{\Sigma}_0^{\bar{\psi},\bar{\psi}}}\bigr)^{-1}\left(\mathbf{i} - \mathbf{u}_0^{\bar{\psi}}\right), \bm{\Sigma}_0^{\phi,\phi}-\bm{\Sigma}_0^{\psi, \bar{\psi}}\bigr({\bm{\Sigma}_0^{\bar{\psi}, \bar{\psi}}}\bigr)^{-1}\bm{\Sigma}_0^{\psi, \bar{\psi}}\bigr),
+p\bigr(\bm{\upsilon}|\mathfrak{D}\bigr) = \mathcal{N}\bigr(\bm{\upsilon}_{0}+\bm{\Sigma}_{\bm{\upsilon},\bar{\bm{\upsilon}}}\bm{\Sigma}_{\bar{\bm{\upsilon}},\bar{\bm{\upsilon}}}^{-1}\left(\mathbf{i} - \bar{\bm{\upsilon}}\right), \bm{\Sigma}_{\bm{\upsilon},\bar{\bm{\upsilon}}}\bm{\Sigma}_{\bar{\bm{\upsilon}},\bar{\bm{\upsilon}}}^{-1}\bm{\Sigma}_{\bm{\upsilon},\bar{\bm{\upsilon}}}\bigr),
 \end{aligned}
 \end{gather}
-где~$\mathbf{u}^{\psi}, \mathbf{u}^{\bar{\psi}}, \bm{\Sigma}_0^{\psi, \phi}, \bm{\Sigma}_0^{\bar{\psi}, \bar{\psi}}, \bm{\Sigma}_0^{\psi, \bar{\psi}}$ введены аналогично к~\eqref{eq:ap:def:1},
+где вектор~$\mathbf{i}$ задается следующим образом:
 \[
 \mathbf{i}=[\underbrace{1, 0, \cdots, 0}_{n_t}, \underbrace{0, 1, \cdots, 0}_{n_t}, \underbrace{0, 0, 1, \cdots, 0}_{n_t}, \underbrace{0, \cdots, 1}_{n_t}]^{\mathsf{T}}.
 \]
@@ -282,10 +281,10 @@ p\bigr(\mathbf{u}^{\psi}|\mathfrak{D}\bigr) = \mathcal{N}\bigr(\mathbf{u}_{0}^{\
 TODO
 \end{proof}
 
-Теорема~\ref{theorem:ap:layer} задает апостериорное распределение параметров~\eqref{eq:ap:5} после удаления слоя нейросети. Полученное распределение $p\bigr(\mathbf{u}^{\psi}|\mathfrak{D}\bigr)$ является оценкой апостериорного распределения модели без одного слоя.
+Теорема~\ref{theorem:ap:layer} задает апостериорное распределение параметров~\eqref{eq:ap:5} после удаления слоя нейросети. Полученное распределение $p\bigr(\bm{\upsilon}|\mathfrak{D}\bigr) $ является оценкой апостериорного распределения модели без одного слоя.
 
 \subsection{Выполнение последовательных преобразований}
-Преобразования $\phi, \psi$ позволяют согласовать пространства параметров учителя~$f$ и ученика~$g$. После сопоставления параметрических моделей получаем, что параметры модели учителя и модели учителя принадлежат одному семейству~\ref{section:one:space}.
+Преобразования $\phi, \psi$ согласовывают пространства параметров учителя~$f$ и ученика~$g$. После сопоставления параметрических моделей получаем, что параметры модели учителя и модели учителя принадлежат одному семейству~\ref{section:one:space}.
 %После сопоставления параметров в качестве априорного распределения параметров ученика~$p\bigr(\mathbf{w}|\mathfrak{D}\bigr)$ рассматривается полученное апостериорное распределение параметров учителя~$p\bigr(\mathbf{u}'|\mathfrak{D}\bigr)$. Получаем, следующее приближение априорного распределения:
 %\begin{gather}
 %\label{eq:ap:6}
