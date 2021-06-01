@@ -176,7 +176,7 @@ g = \bm{\sigma} \circ \mathbf{W}_L\bm{\sigma}  \circ \cdots \circ \mathbf{W}_1, 
 \mathcal{L}\bigr(\mathfrak{D}, \mathbf{A}\bigr) = \log p\bigr(\mathfrak{D}|\mathbf{A}\bigr) = \log \int_{\mathbf{w} \in \mathbb{R}^{N_{\text{st}}}}p\bigr(\mathfrak{D}|\mathbf{w}\bigr)p\bigr(\mathbf{w}|\mathbf{A}\bigr)d\mathbf{w},
 \end{aligned}
 \end{gather}
-где~$p\bigr(\mathbf{w}| \mathbf{A}\bigr)$~--- априорное распределение вектора параметров модели ученика.
+где~$p\bigr(\mathbf{w}| \mathbf{A}\bigr)$~--- априорное распределение вектора параметров модели ученика,~$\mathbf{A}$ обозначает гиперпараметры априорного распределения.
 Так как взятие интеграла~\eqref{eq:st:6} является вычислительно сложной задачей, используется вариационный подход~\cite{graves2011, grabovoy2019}. Для этого задается вариационное распределение параметров модели ученика~$q\bigr(\mathbf{w}|\bm{\mu}, \bm{\Sigma}\bigr),$ которое аппроксимирует неизвестное апостериорное распределение~$p\bigr(\mathbf{w}|\mathfrak{D}\bigr)$
 \begin{gather}
 \label{eq:st:new:1}
@@ -188,10 +188,11 @@ q\bigr(\mathbf{w}|\bm{\mu}, \bm{\Sigma}\bigr) \approx  p\bigr(\mathbf{w}|\mathfr
 \begin{gather}
 \label{eq:st:7}
 \begin{aligned}
-\hat{\mathbf{w}} = \arg \min_{\bm{\mu}, \bm{\Sigma}, \mathbf{w}} \text{D}_{\text{KL}}\bigr(q\bigr(\mathbf{w}|\bm{\mu}, \bm{\Sigma}\bigr)||p\bigr(\mathbf{w}|\mathbf{A}\bigr)\bigr) - \log p\bigr(\mathbf{y}|\mathbf{X}, \mathbf{w}\bigr).
+\hat{\mathbf{w}} = \arg \min_{\bm{\mu}, \bm{\Sigma}, \mathbf{w}} \text{D}_{\text{KL}}\bigr(q\bigr(\mathbf{w}|\bm{\mu}, \bm{\Sigma}\bigr)||p\bigr(\mathbf{w}|\mathbf{A}\bigr)\bigr) - \sum_{i=1}^{m}\log p\bigr(y_i|\mathbf{x}_{i}, \mathbf{w}\bigr),
 \end{aligned}
 \end{gather}
-Выражение~\eqref{eq:st:7} не учитывает параметры учителя~$f$. Для использования информации о распределении параметов учителя предлагается рассмотреть параметры априорного распределения~$p\bigr(\mathbf{w}|\mathbf{A}\bigr)$ как функцию от апостериорного распределения учителя~$p\bigr(\mathbf{u}|\mathfrak{D}\bigr)$.
+где~$\text{D}_{\text{KL}}$ обозначает расстояние Кульбака--Лейблера между вариационным распределением~$q\bigr(\mathbf{w}|\bm{\mu}, \bm{\Sigma}\bigr)$ и априорным распределением~$p\bigr(\mathbf{w}|\mathbf{A}\bigr),$ также вводится логарифм правдоподобия~$\log p\bigr(y_i|\mathbf{x}_{i}, \mathbf{w}\bigr)$ объекта~$\left(\mathbf{x}_i, y_i\right) \in \mathfrak{D}.$
+Выражение~\eqref{eq:st:7} не учитывает параметры учителя~$f$. Для использования информации о распределении параметров учителя предлагается рассмотреть параметры априорного распределения~$p\bigr(\mathbf{w}|\mathbf{A}\bigr)$ как функцию от апостериорного распределения учителя~$p\bigr(\mathbf{u}|\mathfrak{D}\bigr)$.
 
 \section{Построение априорного распределения ученика}
 Апостериорное распределение параметров модели учителя предполагается нормальным:
@@ -208,7 +209,7 @@ p\bigr(\mathbf{u}|\mathfrak{D}\bigr) = \mathcal{N}\bigr(\mathbf{m}, \bm{\Sigma}\
 \label{section:one:space}
 Рассмотрим следующие условия:
 \begin{enumlist}
-    \item число слоев модели учителя равняется числу слоев модели ученика $L=T$;
+    \item число слоев модели ученика равняется числу слоев модели учителя $L=T$;
     \item размеры соответствующих слоев совпадают, другими словами, для всех $t, l$ таких, что $t=l$ выполняется $n_l = n_t,$ где $n_t$ обозначает размер $t$-го слоя учителя, а $n_l$ размер $l$-го слоя ученика.
 \end{enumlist}
 В случае выполнения этих условий, априорное распределение параметров модели ученика приравнивается к апостериорному распределения параметров учителя $p\bigr(\mathbf{w}|\mathbf{A}\bigr) = p\bigr(\mathbf{u}|\mathfrak{D}\bigr)$.
@@ -341,11 +342,11 @@ p\bigr(\bm{\upsilon}|\mathfrak{D}\bigr) = \mathcal{N}\bigr(\mathbf{m}_{\bm{\upsi
 \begin{aligned}
 f &= \bm{\sigma} \circ \mathbf{U}_{T+1}\bm{\sigma} \circ \mathbf{U}_T \cdots \bm{\sigma} \circ \mathbf{U}_t\bm{\sigma} \circ \cdots  \mathbf{U}_2\bm{\sigma} \circ \mathbf{U}_1 =\\
 &=  \bm{\sigma} \circ \mathbf{U}_{T+1}\bm{\sigma} \circ \mathbf{U}_T \cdots \bm{\sigma} \circ \mathbf{I}\bm{\sigma} \circ \cdots  \mathbf{U}_2\bm{\sigma} \circ \mathbf{U}_1 =\\
-&=  \bm{\sigma} \circ \mathbf{U}_{T+1}\bm{\sigma} \circ \mathbf{U}_T \cdots \bm{\sigma} \circ \bm{\sigma} \circ \cdots  \mathbf{U}_2\bm{\sigma} \circ \mathbf{U}_1 =^{1}\\
+&=  \bm{\sigma} \circ \mathbf{U}_{T+1}\bm{\sigma} \circ \mathbf{U}_T \cdots \bm{\sigma} \circ \bm{\sigma} \circ \cdots  \mathbf{U}_2\bm{\sigma} \circ \mathbf{U}_1 =\\
 &=^{1}  \bm{\sigma} \circ \mathbf{U}_{T+1}\bm{\sigma} \circ \mathbf{U}_T \cdots \bm{\sigma} \circ \cdots  \mathbf{U}_2\bm{\sigma} \circ \mathbf{U}_1.
 \end{aligned}
 \end{gather}
-\footnotetext[1]{Выполняется в силу условия теоремы об идемпотентности функции активации.}
+%\footnotetext[1]{Выполняется в силу условия теоремы об идемпотентности функции активации.}
 Получаем, что удаление~$t$-го слоя нейросети эквивалентно приравнивают матрицы параметров~$t$-го слоя к единичной матрице. Распределение параметров после приравнивая к единичной матрице вычисляется при помощи условного распределения. В силу общих свойств нормального распределения условное распределения также является нормальным распределением с параметрами~$\bm{\mu}, \bm{\Xi}:$
 \begin{gather}
 \label{eq:ap:tr:2:2}
@@ -430,7 +431,7 @@ g = \bm{\sigma} \circ \mathbf{W}_2\bm{\sigma} \circ \mathbf{W}_1,
 \begin{gather}
 \label{eq:ex:6}
 \begin{aligned}
-\mathbf{W}_{1} \in \mathbb{R}^{1 \times 50}, \quad \mathbf{W}_{2} \in \mathbb{R}^{50 \times 10}.
+\mathbf{W}_{1} \in \mathbb{R}^{50 \times 10}, \quad \mathbf{W}_{2} \in \mathbb{R}^{1 \times 50}.
 \end{aligned}
 \end{gather}
  В качестве функции активации была выбрана функция активации $\text{ReLu}$.
