@@ -186,11 +186,11 @@ g\bigr(\mathbf{x}\bigr) = \bm{\sigma} \circ \mathbf{W}_L\bm{\sigma}  \circ \cdot
 q\bigr(\mathbf{w}|\bm{\mu}, \bm{\Sigma}\bigr) \approx  p\bigr(\mathbf{w}|\mathfrak{D}\bigr),
 \end{aligned}
 \end{gather}
-где параметры распределения~$\bm{\mu}$ и~$\bm{\Sigma}$ требуется найти решив оптимизационную задачу:
+где оптимальные гиперпараметры распределения~$\hat{\bm{\mu}}$ и~$\hat{\bm{\Sigma}}$ требуется найти вместе с оптимальными параметрами~$\hat{\mathbf{w}}$ решив оптимизационную задачу:
 \begin{gather}
 \label{eq:st:7}
 \begin{aligned}
-\hat{\mathbf{w}} = \arg \min_{\bm{\mu}, \bm{\Sigma}, \mathbf{w}} \text{D}_{\text{KL}}\bigr(q\bigr(\mathbf{w}|\bm{\mu}, \bm{\Sigma}\bigr)||p\bigr(\mathbf{w}|\mathbf{A}\bigr)\bigr) - \sum_{i=1}^{m}\log p\bigr(y_i|\mathbf{x}_{i}, \mathbf{w}\bigr),
+\hat{\mathbf{w}}, \hat{\bm{\mu}}, \hat{\bm{\Sigma}} = \arg \min_{\bm{\mu}, \bm{\Sigma}, \mathbf{w}} \text{D}_{\text{KL}}\bigr(q\bigr(\mathbf{w}|\bm{\mu}, \bm{\Sigma}\bigr)||p\bigr(\mathbf{w}|\mathbf{A}\bigr)\bigr) - \sum_{i=1}^{m}\log p\bigr(y_i|\mathbf{x}_{i}, \mathbf{w}\bigr),
 \end{aligned}
 \end{gather}
 где~$\text{D}_{\text{KL}}$ обозначает расстояние Кульбака--Лейблера между вариационным распределением~$q\bigr(\mathbf{w}|\bm{\mu}, \bm{\Sigma}\bigr)$ и априорным распределением~$p\bigr(\mathbf{w}|\mathbf{A}\bigr).$ Второе слагаемое формулы~\eqref{eq:st:7} является логарифмом правдоподобия~$\log p\bigr(y_i|\mathbf{x}_{i}, \mathbf{w}\bigr)$ объекта~$\left(\mathbf{x}_i, y_i\right) \in \mathfrak{D}$ выборки~\eqref{eq:st:1}.
