@@ -5,21 +5,23 @@
 
 \documentclass[12pt]{a&t}
 \usepackage{graphicx}
+\usepackage{caption}
 \usepackage{bm}
 \usepackage{url}
 \usepackage{multirow}
 
+\usepackage{cmap}
 \usepackage{autonum}
 
 \begin{document}  %%%!!!
 
 \year{2021}
 \title{БАЙЕСОВСКАЯ ДИСТИЛЛЯЦИЯ МОДЕЛЕЙ ГЛУБОКОГО ОБУЧЕНИЯ}%
-\thanks{Настоящая статья содержит результаты проекта Математические методы интеллектуального анализа больших данных, выполняемого в рамках реализации Программы Центра компетенций Национальной технологической инициативы <<Центр хранения и анализа больших данных>>, поддерживаемого Министерством науки и высшего образования Российской Федерации по Договору МГУ им. М.В. Ломоносова с Фондом поддержки проектов Национальной технологической инициативы от 11.12.2018 \No 13/1251/2018. Работа выполнена при поддержке Российского фонда фундаментальных исследований (проекты \No 19-07-01155, \No 19-07-00875).}
+\thanks{Настоящая статья содержит результаты проекта Математические методы интеллектуального анализа больших данных, выполняемого в рамках реализации Программы Центра компетенций Национальной технологической инициативы ``Центр хранения и анализа больших данных'', поддерживаемого Министерством науки и высшего образования Российской Федерации по Договору МГУ им. М.В. Ломоносова с Фондом поддержки проектов Национальной технологической инициативы от 11.12.2018 \No 13/1251/2018. Работа выполнена при поддержке Российского фонда фундаментальных исследований (проекты \No 19-07-01155, \No 19-07-00875).}
 
-\authors{А.В.~ГРАБОВОЙ, grabovoy.av@phystech.edu\\
+\authors{А.В.~ГРАБОВОЙ (grabovoy.av@phystech.edu)\\
 (Московский физико-технический институт),\\
-В.В.~СТРИЖОВ, д-р~физ-мат.~наук, strijov@phystech.edu\\
+В.В.~СТРИЖОВ, д-р~физ-мат.~наук (strijov@phystech.edu)\\
 (Вычислительный центр им. А.А. Дородницына ФИЦ ИУ РАН)}
 
 \maketitle
@@ -40,6 +42,7 @@
 \section{Введение}
 Исследуется проблема снижения числа обучаемых параметров моделей машинного обучения. Примерами моделей с избыточным числом параметров являются AlexNet~\cite{Krizhevsky2012}, VGGNet~\cite{Simonyan2014}, ResNet~\cite{Kaiming2015}, BERT~\cite{Devlin2018, Vaswani2017}, mT5~\cite{Linting2021}, GPT3\cite{Brown2020} и др.
 \begin{table}[h!]
+\captionsetup{labelfont=bf}
 \caption{Число параметров в моделях машинного обучения}
 \label{tb:intro:1}
 \begin{center}
@@ -85,7 +88,7 @@
 \end{definition}
 \begin{definition}
 \label{def:sopos}
-Приведение параметрических моделей~--- изменение структуры модели (одной или нескольких моделей), в результате которого векторы параметров различных моделей лежат в одном пространстве.
+Приведение параметрических моделей~--- изменение структуры модели {\normalfont (}одной или нескольких моделей{\normalfont )}, в результате которого векторы параметров различных моделей лежат в одном пространстве.
 \end{definition}
 
 В результате приведения параметры модели учителя и модели ученика лежат в одном пространстве.
@@ -94,7 +97,7 @@
 В качестве структурных параметров модели выбраны число слоев, а также размер каждого скрытого слоя.
 
 В рамках предложенного метода приведения параметрических моделей не оговорен выбор порядка на множестве параметров модели учителя.
-Для этого предлагается упорядочивать параметры модели учителя на основе их значимости.
+Для этого предлагается упорядочивать параметры модели учителя на основе их значимости~\cite{LeCun1990}.
 Первый нейрон является наиболее значимым, а последний --- нейрон наименее значимым.
 Порядок задается на основе отношения плотности распределения упорядочивваемого параметра к плотности распределения параметра в нуле~\cite{graves2011} или на основе метода Белсли~\cite{grabovoy2019}.
 В рамках данной статье порядок на параметрах в рамках одного слоя задается случайный образом.
@@ -267,7 +270,7 @@ p\bigr(\mathbf{u}|\mathfrak{D}\bigr) = \mathcal{N}\bigr(\mathbf{m}, \bm{\Sigma}\
 \begin{gather}
 \label{eq:ap:tr:1:1}
 \begin{aligned}
-p\bigr(\bm{\upsilon}|\mathfrak{D}\bigr)  = \int\limis_{\bm{\nu}_2}p\bigr(\bar{\bm{\nu}}_1|\mathfrak{D}, \bm{\nu}_1=\mathbf{0}\bigr) d\bm{\nu}_2.
+p\bigr(\bm{\upsilon}|\mathfrak{D}\bigr)  = \int\limits_{\bm{\nu}_2}p\bigr(\bar{\bm{\nu}}_1|\mathfrak{D}, \bm{\nu}_1=\mathbf{0}\bigr) d\bm{\nu}_2.
 \end{aligned}
 \end{gather}
 
@@ -415,14 +418,8 @@ g\bigr(\mathbf{x}\bigr) = \bm{\sigma} \circ \mathbf{W}_3\bm{\sigma} \circ \mathb
 \end{gather}
 В качестве функции активации была выбрана функция активации $\text{ReLu}$.
 
-\begin{figure}[h!]
-\includegraphics[width=0.5\textwidth]{synthetic_likelihood_3_layers.eps}
-\includegraphics[width=0.5\textwidth]{synthetic_D_KL_3_layers.eps}
-\caption{Структура~\eqref{eq:ex:3} модели ученика $g$. Слева: правдоподобие выборки в зависимости от номера итерации при обучении. Справа: KL--дивергенция между вариационным и априорным распределениями параметров модели.}
-\label{exp:fig1}
-\end{figure}
 
-На рис.~\ref{exp:fig1} сравниваются модели ученика со структурой~\eqref{eq:ex:3}. Представлено сравнение разных моделей: модель без дистилляции, где в качестве априорного распределения выбирается стандартное нормальное распределение (на легенде обозначается student); модель с частичной дистилляцией, где в качестве среднего значения параметров выбираются параметры согласно~\eqref{eq:ap:3}, а ковариационная матрица была приравнена к единичной матрице (на легенде обозначается distil-student); модель с полной дистилляцией согласно~\eqref{eq:ap:3} (на легенде обозначается distil-student-all). Видно, что модели ученика, где в качестве априорного распределения выбраны распределения, основанные на апостериорном распределении учителя имеют большее правдоподобие, чем модель, где в качестве априорного распределения выбрано стандартное нормальное. Также заметим, что использование параметра среднего из апостериорного распределения дает основной вклад при дистилляции, так как качество моделей distil-student и distil-student-all совпадает.
+На рис.~\ref{exp:fig1} сравниваются модели ученика со структурой~\eqref{eq:ex:3}. Представлено сравнение разных моделей: модель без дистилляции (график~$1$), где в качестве априорного распределения выбирается стандартное нормальное распределение; модель с частичной дистилляцией (график~$2$), где в качестве среднего значения параметров выбираются параметры согласно~\eqref{eq:ap:3}, а ковариационная матрица была приравнена к единичной матрице; модель с полной дистилляцией (график~$3$) согласно~\eqref{eq:ap:3}. Видно, что модели ученика, где в качестве априорного распределения выбраны распределения, основанные на апостериорном распределении учителя имеют большее правдоподобие, чем модель, где в качестве априорного распределения выбрано стандартное нормальное. Также заметим, что использование параметра среднего из апостериорного распределения дает основной вклад при дистилляции, так как качество моделей без дистилляции и с полной дистилляцией совпадает.
 
 Вторая конфигурация получается путем удаления слоя модели учителя:
 \begin{gather}
@@ -440,14 +437,9 @@ g\bigr(\mathbf{x}\bigr) = \bm{\sigma} \circ \mathbf{W}_2\bm{\sigma} \circ \mathb
 \end{gather}
  В качестве функции активации была выбрана функция активации $\text{ReLu}$.
 
-\begin{figure}[h!]
-\includegraphics[width=0.5\textwidth]{synthetic_likelihood_2_layers.eps}
-\includegraphics[width=0.5\textwidth]{synthetic_D_KL_2_layers.eps}
-\caption{Структура~\eqref{eq:ex:5} модели ученика~$g$. Слева: правдоподобие выборки в зависимости от номера итерации при обучении. Справа: KL--дивергенция между вариационным и априорным распределениями параметров модели.}
-\label{exp:fig2}
-\end{figure}
 
-На рис.~\ref{exp:fig2} сравниваются модели ученика со структурой~\eqref{eq:ex:5}. Аналогично рис.~\ref{exp:fig1} на рис.~\ref{exp:fig2} представлено сравнение модели без дистилляции (student), модели с дистилляцией параметра среднего значение (distil-student) и модели с полной дистилляцией (distil-student-all). В рамках данного эксперимента по дистилляции модели учителя в модель ученика с меньшим числом параметров получены результаты, которые подтверждают, что задание априорного распределения параметров ученика позволяет улучшить число итераций при выборе оптимальных параметров модели ученика.
+
+На рис.~\ref{exp:fig2} сравниваются модели ученика со структурой~\eqref{eq:ex:5}. Аналогично рис.~\ref{exp:fig1} на рис.~\ref{exp:fig2} представлено сравнение модели без дистилляции (график~$1$), модели с дистилляцией параметра среднего значение (график~$2$) и модели с полной дистилляцией (график~$3$). В рамках данного эксперимента по дистилляции модели учителя в модель ученика с меньшим числом параметров получены результаты, которые подтверждают, что задание априорного распределения параметров ученика позволяет улучшить число итераций при выборе оптимальных параметров модели ученика.
 
 \subsection{Выборка FashionMnist}
 
@@ -472,41 +464,37 @@ g\bigr(\mathbf{x}\bigr) = \bm{\sigma} \circ \mathbf{W}_2\bm{\sigma} \circ \mathb
 \end{gather}
 В качестве функции активации была выбрана функция активации $\text{ReLu}$.
 
-\begin{figure}[h!]
-\includegraphics[width=0.5\textwidth]{fashionmnist_likelihood_2_layers.eps}
-\includegraphics[width=0.5\textwidth]{fashionmnist_D_KL_2_layers.eps}
-\caption{Слева: правдоподобие выборки в зависимости от номера итерации при обучении. Справа: KL--дивергенция между вариационным и априорным распределениями параметров модели.}
-\label{exp:fig3}
-\end{figure}
-
 На рис.~\ref{exp:fig3} сравниваются модели ученика с разными априорными распределениями параметров.
 Аналогично синтетическому эксперименту модель, где в качестве априорного распределения использовалось стандартное нормальное распределение, сравнивалась с моделью, где параметры распределения определялись на основе формулы~\eqref{eq:ap:5}. Видно, что у моделей с заданием априорного распределения на основе апостериорного распределения параметров учителя правдоподобие выборки выше, чем у модели, где в качестве априорного распределения выбрано стандартное нормальное распределение.
 
 \begin{table}[]
+\captionsetup{labelfont=bf}
 \caption{Сводная таблица результатов вычислительного эксперимента}
 \label{tb:fn:1}
 \begin{center}
-\begin{tabular}{|l|c|c|c|c|llll}
-\cline{1-5}
-                 & teacher           & student        & distil-student & distil-student-all &                           &                      &                      &                      \\ \cline{1-5}
-\multicolumn{5}{|c|}{Эксперимент на синтетической выборке (удаление нейрона)}             &                      &                      &                      &                      \\ \cline{1-5}
-Структура            & $[10,100,50,1]$   & $[10,10,10,1]$  & $[10,10,10,1]$ & $[10,10,10,1]$    &                      &                      &                      &                      \\ \cline{1-5}
-Число параметров  & 6050                    & 210                   & 210                  & 210                      &                      &                      &                      &                      \\ \cline{1-5}
-Разность площадей~$S$   &   -                         & 0                       & 16559              & 16864                  &                      &                      &                      &                      \\ \cline{1-5}
-\multicolumn{5}{|c|}{Эксперимент на синтетической выборке (удаление слоя)}                    & \multicolumn{1}{c}{} & \multicolumn{1}{c}{} & \multicolumn{1}{c}{} & \multicolumn{1}{c}{} \\ \cline{1-5}
-Структура            & $[10,100,50,1]$   & $[10,50,1]$       & $[10,50,1]$      & $[10,50,1]$          &                      &                      &                      &                      \\ \cline{1-5}
-Число параметров    &   6050                       &          550                &          550               &             550                &                      &                      &                      &                      \\ \cline{1-5}
-Разность площадей~$S$    &  -                          &  0                      &  23310             & 25506                  &                      &                      &                      &                      \\ \cline{1-5}
-\multicolumn{5}{|c|}{Эксперимент на выборке FashionMnist}                                                     &                      &                      &                      &                      \\ \cline{1-5}
-Структура           & $[784,800,50,10]$& $[784,50,10]$   & $[784,50,10]$  & $[784,50,10]$      &                      &                      &                      &                      \\ \cline{1-5}
-Число параметров    &           667700                  &          39700                &         39700                &                 39700            &                      &                      &                      &                      \\ \cline{1-5}
-Разность площадей~$S$   & -                           & 0                       &  1165               & 1145                    &                      &                      &                      &                      \\ \cline{1-5}
-\end{tabular}
+\resizebox{\textwidth}{!}{
+    \begin{tabular}{|l|c|c|c|c|}
+    \hline
+                               & учитель           & \begin{tabular}[c]{@{}c@{}}модель ученика\\ без дистилляции\end{tabular} & \begin{tabular}[c]{@{}c@{}}модель ученика\\ с частичной \\ дистилляцией\end{tabular} & \begin{tabular}[c]{@{}c@{}}модель ученика\\ с полной\\ дистилляцией\end{tabular} \\ \hline
+    \multicolumn{5}{|c|}{Эксперимент на синтетической выборке (удаление нейрона)}                                                                                                                                                                                                                       \\ \hline
+    Структура                  & $[10,100,50,1]$   & $[10,10,10,1]$                                                           & $[10,10,10,1]$                                                                       & $[10,10,10,1]$                                                                   \\ \hline
+    Число параметров           & 6050              & 210                                                                      & 210                                                                                  & 210                                                                              \\ \hline
+    Разность площадей~$S$ & -                 & 0                                                                        & 16559                                                                                & 16864                                                                            \\ \hline
+    \multicolumn{5}{|c|}{Эксперимент на синтетической выборке (удаление слоя)}                                                                                                                                                                                                                          \\ \hline
+    Структура                  & $[10,100,50,1]$   & $[10,50,1]$                                                              & $[10,50,1]$                                                                          & $[10,50,1]$                                                                      \\ \hline
+    Число параметров           & 6050              & 550                                                                      & 550                                                                                  & 550                                                                              \\ \hline
+    Разность площадей~$S$ & -                 & 0                                                                        & 23310                                                                                & 25506                                                                            \\ \hline
+    \multicolumn{5}{|c|}{Эксперимент на выборке FashionMnist}                                                                                                                                                                                                                                           \\ \hline
+    Структура                  & $[784,800,50,10]$ & $[784,50,10]$                                                            & $[784,50,10]$                                                                        & $[784,50,10]$                                                                    \\ \hline
+    Число параметров           & 667700            & 39700                                                                    & 39700                                                                                & 39700                                                                            \\ \hline
+    Разность площадей~$S$ & -                 & 0                                                                        & 1165                                                                                 & 1145                                                                             \\ \hline
+    \end{tabular}
+}
 \end{center}
 \end{table}
 
-В табл.~\ref{tb:fn:1} представлен результат вычислительного эксперимента. Для численного сравнения качества моделей выбрана разность площадей графика $p\bigr(\mathbf{y}|\mathbf{X}, \mathbf{u}\bigr)$ между моделью student и моделями distil-student  и 
-distil-student-all соответсвенно:
+В табл.~\ref{tb:fn:1} представлен результат вычислительного эксперимента. Для численного сравнения качества моделей выбрана разность площадей графика $p\bigr(\mathbf{y}|\mathbf{X}, \mathbf{u}\bigr)$ между моделью без дистилляции и моделями с частичной дистилляцией  и 
+полной дистилляцией соответственно:
 \begin{gather}
 \label{eq:ex:8}
 \begin{aligned}
@@ -529,60 +517,74 @@ S = \sum_{s} p\bigr(\mathbf{y}|\mathbf{X}, \mathbf{u}^s_{\text{s}}\bigr) - p\big
 В вычислительном эксперименте сравнивается модель ученика, которая обучена без использования распределения параметров учители и модель ученика, где в качестве априорного распределения параметров выбрано апостериорное распределение параметров модели учителя после приведения. В табл.~\ref{tb:fn:1} показано, что модели ученика с заданием априорного распределения параметров на основе апостериорного распределения параметров учителя сходятся быстрее, что подтверждается положительным значением метрики~\eqref{eq:ex:8}, которая введена для численного сравнения модели без дистилляции с  дистиллированной моделью.
 
 \begin{thebibliography}{10}
-\bibitem{cifar10}
-	\textit{Alex Krizhevsky and Vinod Nair and Geoffrey Hinton} CIFAR-10 (Canadian Institute for Advanced Research) // \url{http://www.cs.toronto.edu/~kriz/cifar.html}
-\bibitem{imagenet}
-	\textit{Deng, J., Dong, W., Socher, R., Li, L.-J., Li, K., Fei-Fei, L. } Imagenet: A large-scale hierarchical image database //  IEEE conference on computer vision and pattern recognition, 2009. P. 248--255. 
-	
-\bibitem{Zehao2017}
-	\textit{{Huang}, Zehao and {Wang}, Naiyan} Like What You Like: Knowledge Distill via Neuron Selectivity Transfer // arXiv e-prints, 2017.
-\bibitem{Zheng2020}
-	\textit{Kui Ren and Tianhang Zheng and Zhan Qin and Xue Liu} Adversarial Attacks and Defenses in Deep Learning // Engineering, 2020. P. 346--360.
 \bibitem{Krizhevsky2012}
-	\textit{Alex Krizhevsky, Ilya Sutskever, Geoffrey Hinton} ImageNet Classification with Depp Convolutional Neural Networks // NIPS, 2012.
+	\textit{Hinton G., Krizhevsky A., Sutskever I.} ImageNet Classification with Depp Convolutional Neural Networks // Proc. 25th Int. Conf. on Neural Information Procescing Systems. 2012. V.~1. P.~1097--1105.
 \bibitem{Simonyan2014}
-	\textit{Karen Simonyan and Andrew Zisserman} Very Deep Convolutional Networks for Large-Scale Image Recognition // NIPS, 2014.
-\bibitem{Vaswani2017}
-	\textit{Vaswani A., Shazeer N., Parmar N., Uszkoreit J., Jones L., Gomez A., Kaiser L., Polosukhin I.} Attention Is All You Need // In Advances in Neural Information Processing Systems. 2017. V. 5. P. 6000--6010.
-\bibitem{Devlin2018}
-       \textit{Devlin J., Chang M., Lee K., Toutanova K.} BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding // arXiv preprinted, 2018.
-\bibitem{Brown2020}
-        \textit{Tom B. Brown et al} GPT3: Language Models are Few-Shot Learners // arXiv preprinted, 2020.
-\bibitem{Linting2021}
-        \textit{Linting Xue and Noah Constant and Adam Roberts and Mihir Kale and Rami Al-Rfou and Aditya Siddhant and Aditya Barua and Colin Raffel.} mT5: A massively multilingual pre-trained text-to-text transformer // arXiv preprinted, 2021.
-\bibitem{Ziqing2020}
-        \textit{Yang, Ziqing and Cui, Yiming and Chen, Zhipeng and Che, Wanxiang and Liu, Ting and Wang, Shijin and Hu, Guoping} {T}ext{B}rewer: {A}n {O}pen-{S}ource {K}nowledge {D}istillation {T}oolkit for {N}atural {L}anguage {P}rocessing // Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics: System Demonstrations.  2020. P. 9--16.
+	\textit{Simonyan K., Zisserman A.} Very Deep Convolutional Networks for Large-Scale Image Recognition // Int. Conf. on Learning Representations. San Diego. 2015.
 \bibitem{Kaiming2015}
-	\textit{He K., Zhang X., Ren S., Sun J.} Deep Residual Learning for Image Recognition // Proc. of the IEEE Conference on Computer Vision and Pattern Recognition. Las Vegas, 2016. P. 770--778.
-\bibitem{bachteev2018}
-	\textit{Бахтеев О.\,Ю., Стрижов В.\,В.} Выбор моделей глубокого обучения субоптимальной сложности // АиТ. 2018. № 8. С. 129--147.
+	\textit{He K., Ren S., Sun J., Zhang X.} Deep Residual Learning for Image Recognition // Proc. IEEE Conf. on Computer Vision and Pattern Recognition. Las Vegas. 2016. P.~770--778.
+\bibitem{Devlin2018}
+   \textit{Chang M., Devlin J., Lee K., Toutanova K.} BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding // Proc. 2019 Conf. North {A}merican Chapter of the Association for Computational Linguistics: Human Language Technologies. Minnesota. 2019. V.~1. P.~4171--4186.
+\bibitem{Vaswani2017}
+	\textit{Gomez A., Jones L., Kaiser L., Parmar N., Polosukhin I., Shazeer N., Uszkoreit J.,  Vaswani A.} Attention Is All You Need // In Advances in Neural Information Processing Systems. 2017. V.~5. P.~6000--6010.
+\bibitem{Linting2021}
+    \textit{Al-Rfou R., Barua A., Constant N., Kale M.,  Raffel C., Roberts A., Siddhant A., Xue L.} mT5: A massively multilingual pre-trained text-to-text transformer // Proc. 2021 Conf. North {A}merican Chapter of the Association for Computational Linguistics: Human Language Technologies. 2021. P.~483--498.
+\bibitem{Brown2020}
+    \textit{Brown T., et al} GPT3: Language Models are Few-Shot Learners // Advances in Neural Information Processing Systems. 2020. V.~33. P.~1877--1901.
+\bibitem{Zheng2020}
+	\textit{Liu X., Qin Z., Ren K., Zheng T.} Adversarial Attacks and Defenses in Deep Learning // Engineering. 2020. V.~6. P.~346--360.
 \bibitem{Hinton2015}
-        \textit{Hinton G., Vinyals O., Dean J.} Distilling the Knowledge in a Neural Network // NIPS Deep Learning and Representation Learning Workshop. 2015.
+    \textit{Dean J., Hinton G., Vinyals O.} Distilling the Knowledge in a Neural Network // NIPS Deep Learning and Representation Learning Workshop. 2015.
+\bibitem{Vapnik2015}
+	\textit{Izmailov R., Vapnik V.} Learning Using Privileged Information: Similarity Control and Knowledge Transfer // J. of Machine Learning Research. 2015. V.~16. P.~2023--2049.
+\bibitem{Lopez2016}
+	\textit{Bottou L., Lopez-Paz D., Scholkopf B., Vapnik V.} Unifying Distillation and Privileged Information // Int. Conf. on Learning Representations. Puerto Rico. 2016.
 \bibitem{mnist}
-	\textit{LeCun Y.,  Cortes C., Burges C.} The MNIST dataset of handwritten digits, 1998. \text{http://yann.lecun.com/exdb/mnist/index.html}.
-\bibitem{Vapnik2015}
-	\textit{Vapnik V., Izmailov R.} Learning Using Privileged Information: Similarity Control and Knowledge Transfer // Journal of Machine Learning Research. 2015. No 16. P. 2023--2049.
-\bibitem{Lopez2016}
-	\textit{Lopez-Paz D., Bottou L., Scholkopf B., Vapnik V.} Unifying Distillation and Privileged Information // In International Conference on Learning Representations. Puerto Rico, 2016.
-\bibitem{Ivakhnenko1994}
-	\textit{Madala H., Ivakhnenko A.} Inductive Learning Algorithms for Complex Systems Modeling. Boca Raton: CRC Press Inc., 1994.
-\bibitem{fashionmnist}
-	\textit{Xiao H., Rasul K.,Vollgraf R.} Fashion-MNIST: a Novel Image Dataset for Benchmarking Machine Learning Algorithms // arXiv preprint arXiv:1708.07747. 2017.
-\bibitem{twiter2013}
-	\textit{Wilson T., Kozareva Z., Nakov P., Rosenthal S., Stoyanov V., Ritter A.} {S}em{E}val-2013 Task 2: Sentiment Analysis in Twitter // Proceedings of the Seventh International Workshop on Semantic Evaluation ({S}em{E}val 2013). Atlanta, 2013. P. 312--320.
-\bibitem{LeCun1989}
-	\textit{LeCun Y., Boser B., Denker J., Henderson D., Howard R., Hubbard W., Jackel L.} Backpropagation Applied to Handwritten Zip Code Recognition // Neural Computation. 1989. V. 1. No 4. P. 541--551.
-\bibitem{Schmidhuber1997}
-	\textit{Hochreiter S., Schmidhuber J.} Long short-term memory // Neural Computation. 1997. V. 9. No 8.  P. 1735--1780.
-\bibitem{kingma2014}
-	\textit{Kingma D, Ba J.} Adam: A Method for Stochastic Optimization // arXiv preprint arXiv:1412.6980. 2014.
+	\textit{Burges C., Cortes C., LeCun Y.} The MNIST dataset of handwritten digits. 1998. \text{http://yann.lecun.com/exdb/mnist/index.html}.
+\bibitem{Zehao2017}
+	\textit{Huang Z., Naiyan W.} Like What You Like: Knowledge Distill via Neuron Selectivity Transfer // arXiv:1707.01219. 2017.
+\bibitem{cifar10}
+	\textit{Hinton G., Krizhevsky A., Nair V.} CIFAR-10 (Canadian Institute for Advanced Research) // \url{http://www.cs.toronto.edu/~kriz/cifar.html}
+\bibitem{imagenet}
+	\textit{Deng J., et al} Imagenet: A large-scale hierarchical image database // Proc. IEEE Conf. on computer vision and pattern recognition. Miami. 2009. P.~248--255.
+\bibitem{LeCun1990}
+	\textit{Denker J., LeCun Y., Solla S.} Optimal Brain Damage~// Advances in Neural Information Processing Systems. 1989. V.~2. P.~598--605.
 \bibitem{graves2011}
-	\textit{Graves A.} Practical Variational Inference for Neural Networks // Advances in Neural Information Processing Systems, 2011. Vol. 24. P. 2348--2356.
+	\textit{Graves A.} Practical Variational Inference for Neural Networks // Advances in Neural Information Processing Systems. 2011. V.~24. P.~2348--2356.
 \bibitem{grabovoy2019}
-	\textit{Grabovoy A.V., Bakhteev O.Y., Strijov V.V.} Estimation of relevance for neural network parameters // Informatics and Applications, 2019. Vol.13 No 2. P. 62--70.
-\bibitem{Vapnik2015}
-	\textit{Vapnik V., Izmailov R.} Learning Using Privileged Information: Similarity Control and Knowledge Transfer // Journal of Machine Learning Research. 2015. No 16. P. 2023--2049.
-\bibitem{Lopez2016}
-	\textit{Lopez-Paz D., Bottou L., Scholkopf B., Vapnik V.} Unifying Distillation and Privileged Information // In International Conference on Learning Representations. Puerto Rico, 2016.
- \end{thebibliography}
+	\textit{Bakhteev O.Y., Grabovoy A.V., Strijov V.V.} Estimation of relevance for neural network parameters // Informatics and Applications. 2019. V.~13 No.~2. P.~62--70.
+\bibitem{fashionmnist}
+	\textit{Rasul K., Vollgraf R., Xiao H.} Fashion-MNIST: a Novel Image Dataset for Benchmarking Machine Learning Algorithms // arXiv preprint arXiv:1708.07747. 2017.
+\end{thebibliography}
+
+\newpage
+\begin{figure}[h!]
+\includegraphics[width=0.5\textwidth]{synthetic_likelihood_3_layers.eps}
+\includegraphics[width=0.5\textwidth]{synthetic_D_KL_3_layers.eps}
+\caption{}
+\label{exp:fig1}
+\end{figure}
+
+\begin{figure}[h!]
+\includegraphics[width=0.5\textwidth]{synthetic_likelihood_2_layers.eps}
+\includegraphics[width=0.5\textwidth]{synthetic_D_KL_2_layers.eps}
+\caption{}
+\label{exp:fig2}
+\end{figure}
+
+\begin{figure}[h!]
+\includegraphics[width=0.5\textwidth]{fashionmnist_likelihood_2_layers.eps}
+\includegraphics[width=0.5\textwidth]{fashionmnist_D_KL_2_layers.eps}
+\caption{}
+\label{exp:fig3}
+\end{figure}
+
+\newpage
+~\\
+Рис.~1. Структура~\eqref{eq:ex:3} модели ученика $g$. Слева: правдоподобие выборки в зависимости от номера итерации при обучении. Справа: \text{KL}--дивергенция между вариационным и априорным распределениями параметров модели.
+\\~\\
+Рис.~2. Структура~\eqref{eq:ex:5} модели ученика~$g$. Слева: правдоподобие выборки в зависимости от номера итерации при обучении. Справа: \text{KL}--дивергенция между вариационным и априорным распределениями параметров модели.
+\\~\\
+Рис.~3. Слева: правдоподобие выборки в зависимости от номера итерации при обучении. Справа: KL--дивергенция между вариационным и априорным распределениями параметров модели.
+
 \end{document}
