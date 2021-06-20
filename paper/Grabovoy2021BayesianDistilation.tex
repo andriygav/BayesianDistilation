@@ -9,7 +9,7 @@
 \usepackage{bm}
 \usepackage{url}
 \usepackage{multirow}
-
+%\renewcommand{\baselinestretch}{2}
 \usepackage{cmap}
 \usepackage{autonum}
 
@@ -17,11 +17,11 @@
 
 \year{2021}
 \title{БАЙЕСОВСКАЯ ДИСТИЛЛЯЦИЯ МОДЕЛЕЙ ГЛУБОКОГО ОБУЧЕНИЯ}%
-\thanks{Настоящая статья содержит результаты проекта Математические методы интеллектуального анализа больших данных, выполняемого в рамках реализации Программы Центра компетенций Национальной технологической инициативы ``Центр хранения и анализа больших данных'', поддерживаемого Министерством науки и высшего образования Российской Федерации по Договору МГУ им. М.В. Ломоносова с Фондом поддержки проектов Национальной технологической инициативы от 11.12.2018 \No 13/1251/2018. Работа выполнена при поддержке Российского фонда фундаментальных исследований (проекты \No 19-07-01155, \No 19-07-00875).}
+\thanks{Настоящая статья содержит результаты проекта Математические методы интеллектуального анализа больших данных, выполняемого в рамках реализации Программы Центра компетенций Национальной технологической инициативы ``Центр хранения и анализа больших данных'', поддерживаемого Министерством науки и высшего образования Российской Федерации по Договору МГУ\,им.\,М.В.\,Ломоносова с Фондом поддержки проектов Национальной технологической инициативы от 11.12.2018 \No 13/1251/2018. Работа выполнена при поддержке Российского фонда фундаментальных исследований (проекты \No 19-07-01155, \No 19-07-00875).}
 
 \authors{А.В.~ГРАБОВОЙ (grabovoy.av@phystech.edu)\\
 (Московский физико-технический институт),\\
-В.В.~СТРИЖОВ, д-р~физ-мат.~наук (strijov@phystech.edu)\\
+В.В.~СТРИЖОВ, д-р~физ.-мат.~наук (strijov@phystech.edu)\\
 (Вычислительный центр им. А.А. Дородницына ФИЦ ИУ РАН)}
 
 \maketitle
@@ -40,7 +40,7 @@
 \end{abstract}
 
 \section{Введение}
-Исследуется проблема снижения числа обучаемых параметров моделей машинного обучения. Примерами моделей с избыточным числом параметров являются AlexNet~\cite{Krizhevsky2012}, VGGNet~\cite{Simonyan2014}, ResNet~\cite{Kaiming2015}, BERT~\cite{Devlin2018, Vaswani2017}, mT5~\cite{Linting2021}, GPT3\cite{Brown2020} и др.
+Исследуется проблема снижения числа обучаемых параметров моделей машинного обучения. Примерами моделей с избыточным числом параметров являются AlexNet~\cite{Krizhevsky2012}, VGGNet~\cite{Simonyan2014}, ResNet~\cite{Kaiming2015}, BERT~\cite{Devlin2018, Vaswani2017}, mT5~\cite{Linting2021}, GPT3~\cite{Brown2020} и др.
 \begin{table}[h!]
 \captionsetup{labelfont=bf}
 \caption{Число параметров в моделях машинного обучения}
@@ -100,7 +100,7 @@
 Для этого предлагается упорядочивать параметры модели учителя на основе их значимости~\cite{LeCun1990}.
 Первый нейрон является наиболее значимым, а последний --- нейрон наименее значимым.
 Порядок задается на основе отношения плотности распределения упорядочиваемого параметра к плотности распределения параметра в нуле~\cite{graves2011} или на основе метода Белсли~\cite{grabovoy2019}.
-В рамках данной статье порядок на параметрах в рамках одного слоя задается случайный образом.
+В рамках данной статьи порядок на параметрах задается случайный образом.
 
 В рамках вычислительного эксперимента проводится теоретический анализ. Предложенный метод дистилляции анализируется на примере синтетической выборки, а также на реальной выборке FashionMnist~\cite{fashionmnist}.
 
@@ -518,27 +518,27 @@ S = \sum_{s} p\bigr(\mathbf{y}|\mathbf{X}, \mathbf{u}^s_{\text{s}}\bigr) - p\big
 
 \begin{thebibliography}{10}
 \bibitem{Krizhevsky2012}
-	\textit{Hinton G., Krizhevsky A., Sutskever I.} ImageNet Classification with Depp Convolutional Neural Networks // Proc. 25th Int. Conf. on Neural Information Procescing Systems. 2012. V.~1. P.~1097--1105.
+	\textit{Krizhevsky A., Sutskever I., Hinton G.} ImageNet Classification with Depp Convolutional Neural Networks // Proc. 25th Int. Conf. on Neural Information Procescing Systems. 2012. V.~1. P.~1097--1105.
 \bibitem{Simonyan2014}
 	\textit{Simonyan K., Zisserman A.} Very Deep Convolutional Networks for Large-Scale Image Recognition // Int. Conf. on Learning Representations. San Diego. 2015.
 \bibitem{Kaiming2015}
 	\textit{He K., Ren S., Sun J., Zhang X.} Deep Residual Learning for Image Recognition // Proc. IEEE Conf. on Computer Vision and Pattern Recognition. Las Vegas. 2016. P.~770--778.
 \bibitem{Devlin2018}
-   \textit{Chang M., Devlin J., Lee K., Toutanova K.} BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding // Proc. 2019 Conf. North {A}merican Chapter of the Association for Computational Linguistics: Human Language Technologies. Minnesota. 2019. V.~1. P.~4171--4186.
+   \textit{Devlin J., Chang M., Lee K., Toutanova K.} BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding // Proc. 2019 Conf. North {A}merican Chapter of the Association for Computational Linguistics: Human Language Technologies. Minnesota. 2019. V.~1. P.~4171--4186.
 \bibitem{Vaswani2017}
-	\textit{Gomez A., Jones L., Kaiser L., Parmar N., Polosukhin I., Shazeer N., Uszkoreit J.,  Vaswani A.} Attention Is All You Need // In Advances in Neural Information Processing Systems. 2017. V.~5. P.~6000--6010.
+	\textit{Vaswani A., Gomez A., Jones L., Kaiser L., Parmar N., Polosukhin I., Shazeer N., Uszkoreit J.} Attention Is All You Need // In Advances in Neural Information Processing Systems. 2017. V.~5. P.~6000--6010.
 \bibitem{Linting2021}
     \textit{Al-Rfou R., Barua A., Constant N., Kale M.,  Raffel C., Roberts A., Siddhant A., Xue L.} mT5: A massively multilingual pre-trained text-to-text transformer // Proc. 2021 Conf. North {A}merican Chapter of the Association for Computational Linguistics: Human Language Technologies. 2021. P.~483--498.
 \bibitem{Brown2020}
     \textit{Brown T., et al} GPT3: Language Models are Few-Shot Learners // Advances in Neural Information Processing Systems. 2020. V.~33. P.~1877--1901.
 \bibitem{Zheng2020}
-	\textit{Liu X., Qin Z., Ren K., Zheng T.} Adversarial Attacks and Defenses in Deep Learning // Engineering. 2020. V.~6. P.~346--360.
+	\textit{Zheng T., Liu X., Qin Z., Ren K.} Adversarial Attacks and Defenses in Deep Learning // Engineering. 2020. V.~6. P.~346--360.
 \bibitem{Hinton2015}
-    \textit{Dean J., Hinton G., Vinyals O.} Distilling the Knowledge in a Neural Network // NIPS Deep Learning and Representation Learning Workshop. 2015.
+    \textit{Hinton G., Dean J., Vinyals O.} Distilling the Knowledge in a Neural Network // NIPS Deep Learning and Representation Learning Workshop. 2015.
 \bibitem{Vapnik2015}
-	\textit{Izmailov R., Vapnik V.} Learning Using Privileged Information: Similarity Control and Knowledge Transfer // J. of Machine Learning Research. 2015. V.~16. P.~2023--2049.
+	\textit{Vapnik V., Izmailov R.} Learning Using Privileged Information: Similarity Control and Knowledge Transfer // J. of Machine Learning Research. 2015. V.~16. P.~2023--2049.
 \bibitem{Lopez2016}
-	\textit{Bottou L., Lopez-Paz D., Scholkopf B., Vapnik V.} Unifying Distillation and Privileged Information // Int. Conf. on Learning Representations. Puerto Rico. 2016.
+	\textit{Lopez-Paz D., Bottou L., Scholkopf B., Vapnik V.} Unifying Distillation and Privileged Information // Int. Conf. on Learning Representations. Puerto Rico. 2016.
 \bibitem{mnist}
 	\textit{Burges C., Cortes C., LeCun Y.} The MNIST dataset of handwritten digits. 1998. \text{http://yann.lecun.com/exdb/mnist/index.html}.
 \bibitem{Zehao2017}
@@ -548,11 +548,11 @@ S = \sum_{s} p\bigr(\mathbf{y}|\mathbf{X}, \mathbf{u}^s_{\text{s}}\bigr) - p\big
 \bibitem{imagenet}
 	\textit{Deng J., et al} Imagenet: A large-scale hierarchical image database // Proc. IEEE Conf. on computer vision and pattern recognition. Miami. 2009. P.~248--255.
 \bibitem{LeCun1990}
-	\textit{Denker J., LeCun Y., Solla S.} Optimal Brain Damage~// Advances in Neural Information Processing Systems. 1989. V.~2. P.~598--605.
+	\textit{LeCun Y., Denker J., Solla S.} Optimal Brain Damage~// Advances in Neural Information Processing Systems. 1989. V.~2. P.~598--605.
 \bibitem{graves2011}
 	\textit{Graves A.} Practical Variational Inference for Neural Networks // Advances in Neural Information Processing Systems. 2011. V.~24. P.~2348--2356.
 \bibitem{grabovoy2019}
-	\textit{Bakhteev O.Y., Grabovoy A.V., Strijov V.V.} Estimation of relevance for neural network parameters // Informatics and Applications. 2019. V.~13 No.~2. P.~62--70.
+	\textit{Grabovoy A.V., Bakhteev O.Y.,  Strijov V.V.} Estimation of relevance for neural network parameters // Informatics and Applications. 2019. V.~13 No.~2. P.~62--70.
 \bibitem{fashionmnist}
 	\textit{Rasul K., Vollgraf R., Xiao H.} Fashion-MNIST: a Novel Image Dataset for Benchmarking Machine Learning Algorithms // arXiv preprint arXiv:1708.07747. 2017.
 \end{thebibliography}
